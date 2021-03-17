@@ -274,6 +274,7 @@ observeEvent(input$connect_selected, {
           server_index <- which(resources$study_server[i] == names(connection$conns))
           name <- paste0(   resources[i,]$project, ".", resources[i,]$table)
           
+          datashield.symbols(connection$conns)
           datashield.assign.expr(connection$conns[server_index], make.names(paste0(name, ".t")), as.symbol('1'))
           datashield.assign.table(connection$conns[server_index], make.names(paste0(name, ".t")), name)
 
@@ -284,6 +285,7 @@ observeEvent(input$connect_selected, {
           server_index <- which(resources$study_server[i] == names(connection$conns))
           name <- paste0(resources[i,]$project, ".", resources[i,]$resources)
           
+          datashield.symbols(connection$conns)
           datashield.assign.expr(connection$conns[server_index], make.names(paste0(name, ".r")), as.symbol('1'))
           datashield.assign.resource(connection$conns[server_index], make.names(paste0(name, ".r")), name)
           name <- make.names(paste0(name, ".r"))
@@ -355,6 +357,8 @@ observeEvent(input$connect_selected, {
       connection$active <- TRUE
       
     }, error = function(w){
+      message("Error: ", w)
+      datashield.errors()
       datashield.logout(connection$conns)
       # opal.logout(connection$opal_conection)
       shinyalert("Oops!", "Broken resource", type = "error")
