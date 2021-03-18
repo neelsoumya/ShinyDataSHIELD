@@ -21,7 +21,7 @@ server <- function(input, output, session) {
   source("table_columns.R", local = TRUE)
   
   source("ggeditLiteModule.R", local = TRUE)
-  ggeditLiteServer("manhattan_edit", "genomics_manhattan_vcf_plot")
+  # ggeditLiteServer("manhattan_edit", "genomics_manhattan_vcf_plot")
   ggeditLiteServer("d_statistics_boxplot_plot_edit", "ds_boxplot_plot")
   
   js$disableTab("summary")

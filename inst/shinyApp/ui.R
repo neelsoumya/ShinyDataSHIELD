@@ -13,8 +13,13 @@ library(ggplot2)
 library(shinycssloaders)
 library(shinyWidgets)
 library(stringr)
+#library(thematic)
+library(fresh)
+library(ggthemr)
 
 source("ggeditLiteModule.R", local = TRUE)
+
+# thematic::thematic_shiny()
 
 jscode <- '
 $(document).keyup(function(event) {
@@ -52,6 +57,17 @@ css_tab <- "
   border-color: #aaa !important;
 }"
 
+options(sass.cache = FALSE)
+sass::sass(
+  sass::sass_file("../../www/theme.scss"),
+  output = "../../www/theme.css"
+  )
+
+p_color <- fread("../../www/theme.scss", skip = "$top_bar_colour: ", nrows = 1)
+p_color <- substr(colnames(p_color), 18,24)[1]
+# Set p_color for withSpinner CSS
+options(spinner.color = p_color)
+
 ## ui.R ##
 sidebar <- dashboardSidebar(
   sidebarMenu(
@@ -73,10 +89,14 @@ sidebar <- dashboardSidebar(
 )
 
 body <- dashboardBody(
+  tags$head(includeCSS("../../www/theme.css")),
+  # use_theme(custom_theme),
   useShinyalert(),
   useShinyjs(),
   extendShinyjs(text = jscode_tab, functions = c("enableTab", "disableTab")),
   inlineCSS(css_tab),
+  # inlineCSS(n_bar_css),
+  # inlineCSS(tabbox_css),
   tabItems(
     tabItem(tabName = "server_connect",
             tabPanel('server_connect',
@@ -87,7 +107,7 @@ body <- dashboardBody(
                                    circleButton("remove", size = "sm", icon = icon("minus"), status = "primary")
                                    ),
                          id = "tabset1", width = 12,
-                         tabPanel("Server1", 
+                         tabPanel("Server1",
                                   fluidRow(
                                   column(6,
                                          h3("URL"),
@@ -193,7 +213,8 @@ body <- dashboardBody(
                               fluidRow(
                                 column(6,
                                        uiOutput("d_statistics_variable_selector_boxplot_approach"),
-                                       uiOutput("d_statistics_variable_selector_boxplot")
+                                       uiOutput("d_statistics_variable_selector_boxplot"),
+                                       # actionButton("stop", "stop")
                                        ),
                                 column(6,
                                        uiOutput("d_statistics_variable_selector_boxplot2"),
@@ -300,7 +321,7 @@ body <- dashboardBody(
                 ),
                 tabPanel("Manhattan Plot", value = "gwas_plot",
                   withSpinner(plotOutput("manhattan")),
-                  ggeditLiteUI("manhattan_edit"),
+                  # ggeditLiteUI("manhattan_edit"),
                   downloadButton("genomics_manhattan_vcf_plot_download", "Download plot", "genomics_manhattan_vcf_plot")
                 )
               )

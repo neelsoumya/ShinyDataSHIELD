@@ -1,0 +1,194 @@
+.skin-blue .main-header .navbar {
+  background-color: #363e4d;
+}
+
+.skin-blue .main-header .logo {
+  background-color: #161a20;
+}
+
+.skin-blue .main-header .logo:hover {
+  background-color: #161a20;
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+  background-color: #161a20;
+}
+
+.skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+  background-color: #56627a;
+}
+
+.skin-blue .sidebar-menu > li.active > a, .skin-blue .sidebar-menu > li:hover > a {
+  color: choose-contrast-color(#161a20);
+  background: #161a20;
+  border-left-color: #363e4d;
+}
+
+.content-wrapper, .right-side {
+  background-color: #b6becc;
+}
+
+.nav-tabs-custom > .tab-content {
+  background: #c5cbd6;
+}
+
+.nav-tabs-custom > .nav-tabs {
+  border-bottom-color: #363e4d;
+  background: #a7b0c1;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active:hover > a, .nav-tabs-custom > .nav-tabs > li.active > a {
+  background-color: #c5cbd6;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active > a {
+  border-left-color: #c5cbd6;
+  border-right-color: #c5cbd6;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active {
+  border-top-color: #363e4d;
+}
+
+hr {
+  border-top: 1px solid #363e4d;
+}
+
+.progress-bar {
+  background-color: #363e4d;
+}
+
+.shiny-notification {
+  background-color: #d4d9e1;
+  border: 1px solid #b6becc;
+  color: choose-contrast-color(#d4d9e1);
+}
+
+.material-switch > input[type=checkbox]:checked + label:after {
+  background: #363e4d;
+}
+
+.material-switch > input[type=checkbox]:checked + label:before {
+  background: #363e4d;
+}
+
+.form-control {
+  background-color: #d4d9e1;
+  border-color: #b6becc;
+  color: choose-contrast-color(#d4d9e1);
+}
+
+.form-control:focus {
+  border-color: #363e4d;
+  color: choose-contrast-color(#d4d9e1);
+}
+
+.form-control:hover:not(:focus) {
+  border-color: #7a88a2;
+  color: choose-contrast-color(#d4d9e1);
+}
+
+.selectize-input {
+  border: 1px solid #b6becc;
+}
+
+.selectize-input:hover {
+  border: 1px solid #7a88a2;
+}
+
+.selectize-input, .selectize-control.single .selectize-input.input-active {
+  background: #d4d9e1;
+}
+
+.selectize-input.full {
+  background: #d4d9e1;
+}
+
+.selectize-input.focus {
+  border-color: #363e4d;
+}
+
+.selectize-dropdown, .selectize-dropdown.form-control {
+  background: #d4d9e1;
+}
+
+.selectize-input.focus {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.selectize-dropdown .active {
+  background: #b6becc !important;
+}
+
+.item {
+  background: #d4d9e1;
+}
+
+.selectize-control.multi .selectize-input > div {
+  background: #c5cbd6;
+}
+
+.selectize-control.multi .selectize-input > div.active {
+  background: #363e4d;
+}
+
+.btn-default {
+  background-color: #b6becc;
+  color: choose-contrast-color(#b6becc);
+  border-color: #363e4d;
+}
+
+.btn-default:hover {
+  background-color: #d4d9e1;
+  color: choose-contrast-color(#b6becc);
+  border-color: #7a88a2;
+}
+
+.btn-default:focus {
+  background-color: #b6becc;
+  color: choose-contrast-color(#b6becc);
+  border-color: #363e4d;
+}
+
+.btn-default.active.focus, .btn-default.active:focus, .btn-default.active:hover, .btn-default.focus:active, .btn-default:active:focus, .btn-default:active:hover, .open > .dropdown-toggle.btn-default.focus, .open > .dropdown-toggle.btn-default:focus, .open > .dropdown-toggle.btn-default:hover {
+  background-color: #98a3b7;
+  color: choose-contrast-color(#b6becc);
+  border-color: black;
+}
+
+.btn-primary {
+  background-color: #363e4d;
+  border-color: #363e4d;
+  color: #c5cbd6;
+}
+
+.btn-primary:hover {
+  background-color: #4b566b;
+  border-color: #4b566b;
+  color: #c5cbd6;
+}
+
+.btn-primary:focus {
+  background-color: #363e4d;
+  color: #c5cbd6;
+  border-color: #363e4d;
+}
+
+.btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary.focus:active, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover {
+  background-color: #21262f;
+  color: #c5cbd6;
+  border-color: #21262f;
+}
+
+table.dataTable, table.dataTable th {
+  background: #a7b0c1;
+}
+
+table.dataTable, table.dataTable td {
+  background: #c5cbd6;
+}
+
+table.dataTable tr.selected td, table.dataTable td.selected {
+  background-color: #000 !important;
+}

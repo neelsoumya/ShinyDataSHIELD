@@ -111,7 +111,7 @@ observeEvent(input$gwas_trigger, {
         js$enableTab("gwas_plot")
         showElement("vcf_results_table_download")
       }, error = function(w){
-        shinyalert("Oops!", "Error when performing GWAS", type = "error")
+        shinyalert("Oops!", paste(datashield.errors()), type = "error")
         hideElement("vcf_results_table_download")
       })
     })

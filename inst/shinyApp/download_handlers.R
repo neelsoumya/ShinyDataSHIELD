@@ -3,24 +3,48 @@ output$descriptive_summary_download <- downloadHandler(
   content = function(file) {
     write.csv(
       tryCatch({
-        if(ds.class(paste0("table1$", input$d_statistics_variable_selector_value), datasources = connection$conns) == "factor") {
-          taula <- ds.table1D(paste0("table1$", input$d_statistics_variable_selector_value), datasources = connection$conns)$counts
-          data.table(Values = rownames(taula), Count = taula[,1])
+        if(is.null(input$d_statistics_variable_selector_value_approach)){type <- "combine"} else{
+          type <- input$d_statistics_variable_selector_value_approach
+        }
+        if(ds.class(paste0("tables_descriptive$", input$d_statistics_variable_selector_value), datasources = connection$conns[
+          as.numeric(lists$available_tables[type_resource == "table"][input$available_tables_render_rows_selected[1], 2])
+        ]) == "factor") {
+          taula <- ds.table(rvar = paste0("tables_descriptive$", input$d_statistics_variable_selector_value), datasources = connection$conns[
+            as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_render_rows_selected, 2]))
+          ])
+          if(type == "combine"){
+            table <- data.frame(taula$output.list$TABLES.COMBINED_all.sources_counts)
+            colnames(table) <- "Counts"
+          }
+          else{
+            table <- data.frame(taula$output.list$TABLE_rvar.by.study_counts)
+            colnames(table) <- paste0(names(connection$conns[
+              as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_render_rows_selected, 2]))
+            ]))
+          }
+          table
         }
         else {
-          Quantiles <- ds.quantileMean(paste0("table1$", input$d_statistics_variable_selector_value), datasources = connection$conns)
-          data.table(Quantiles = names(Quantiles), Value = round(Quantiles, digits = 4))
+          Quantiles <- ds.quantileMean(paste0("tables_descriptive$", input$d_statistics_variable_selector_value), datasources = connection$conns[
+            as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_render_rows_selected, 2]))
+          ], type = type)
+          table <- data.frame(matrix(unlist(Quantiles), nrow=length(Quantiles), byrow=T))
+          rownames(table) <- names(Quantiles)
+          colnames(table) <- names(Quantiles[[1]])
+          round(table, digits = 4)
         }
       }, error = function(w){})
-      , file, row.names = FALSE)
+      , file)
   }
 )
 
 output$glm_results_table_download <- downloadHandler(
   filename = "glm_results_table.csv",
   content = function(file) {
-    write.csv(glm_results$glm_result_table$coefficients, 
-              file)
+    write.csv(if(input$glm_approach == "Pooled"){
+      glm_results$glm_result_table$coefficients
+    }else{glm_results$glm_result_table$SLMA.pooled.ests.matrix}, 
+              file, quote = F)
   }
 )
 
@@ -30,7 +54,7 @@ output$glmer_results_table_download <- downloadHandler(
     write.csv(if(is.list(glm_results$glmer_result_table$output.summary[[input$glmer_results_select_value]])){
       eval(str2expression(paste0("glm_results$glmer_result_table$output.summary$", input$glmer_results_select_value, "$coefficients")))
     }else{try(eval(str2expression(paste0("glm_results$glmer_result_table$output.summary$", input$glmer_results_select_value))))}, 
-              file)
+              file, quote = F)
   }
 )
 
@@ -38,7 +62,7 @@ output$plink_results_table_download <- downloadHandler(
   filename = "plink_results_table.csv",
   content = function(file) {
     write.csv(plink_results$result_table[[1]]$results, 
-              file, row.names = FALSE)
+              file, row.names = FALSE, quote = F)
   }
 )
 
@@ -46,7 +70,7 @@ output$vcf_results_table_download <- downloadHandler(
   filename = "vcf_results_table.csv",
   content = function(file) {
     write.csv(do.call("rbind", vcf_results$result_table_gwas), 
-              file, row.names = FALSE)
+              file, row.names = FALSE, quote = F)
   }
 )
 
@@ -58,7 +82,7 @@ output$limma_results_table_download <- downloadHandler(
                                             collapse = ","), ")")
       eval(str2expression(exp))
       res
-    },file, row.names = FALSE)
+    },file, row.names = FALSE, quote = F)
   }
 )
 

@@ -1,0 +1,251 @@
+// Top bar (left logo spot, toggle and top bar)  // ALWAYS place active $top_bar_colour
+// on the first row. The css for withSpinner is grabbed from it
+$top_bar_colour: #363e4d; // Grey
+//$top_bar_colour: #7d0017; // Red
+$top_bar__logo_colour: darken($top_bar_colour, 15);
+$top_bar__logo_colour_hover: $top_bar__logo_colour;
+$top_bar_text_colour: #fff;
+$sidebar_toggle_hover: $top_bar__logo_colour; // default color is top_bar_color
+
+// Side bar
+$sidebar_background: $top_bar__logo_colour; // background of selected element on sidebar
+$sidebar_text: choose-contrast-color($sidebar_background);
+$sidebar_left_stripe: $top_bar_colour;
+$left_sidebar_bg: lighten($top_bar_colour, 15); // barckground of sidebar
+
+// Main
+$main_background: lighten($top_bar_colour, 50);
+
+// Tabbox
+$box_background: lighten($top_bar_colour, 55); // bg of whole box
+$box_navbar_background: lighten($top_bar_colour, 45); // bg of the top bar
+$box_separator_line: $top_bar_colour; // separator line between top bar and whole box
+$box_active_tab: $box_background;
+$active_tab: $box_separator_line; // color of top line of active tab
+
+// HR line
+$hr_line: $top_bar_colour;
+
+// Progress box
+$progress_bar: $top_bar_colour;
+$progress_bg: lighten($main_background, 10);
+$progress_border: darken($progress_bg, 10);
+$progress_color: choose-contrast-color($progress_bg);
+
+// Material toggles
+$toggle_bg: $top_bar_colour;
+
+// Forms (text/password inputs)
+$forms_bg: lighten($top_bar_colour, 60); // background color
+$forms: darken($forms_bg, 10); //this, hover and active only affect border color
+$forms_hover: lighten($top_bar_colour, 30);
+$forms_active: $top_bar_colour;
+$forms_text: choose-contrast-color($forms_bg);
+
+// Input fields (single / multiple)
+$inputs_bg: $forms_bg;
+$inputs_border: $forms;
+$inputs_border_hover: $forms_hover;
+$inputs_border_active: $forms_active;
+$inputs_dropdown_bg: $inputs_bg;
+$inputs_dropdown_bg_hover: darken($inputs_bg, 10);
+$inputs_multiple_bg_of_selected_elements: $box_background;
+$inputs_multiple_bg_of_clicked_elements: $inputs_border_active;
+
+// Buttons (same as forms but darker to stand out)
+$button_bg: darken($forms_bg, 10);
+$buttons_border: $top_bar_colour;
+$buttons_text: choose-contrast-color($button_bg);
+$button_bg_hover: lighten($button_bg, 10);
+$buttons_border_hover: lighten($buttons_border, 30);
+$button_bg_click: darken($button_bg, 10);
+$buttons_border_click: darken($buttons_border, 30);
+
+// Buttons +/- (border color same as solid color, hover etc affects solid color only)
+$buttons_plus_solid_color: $top_bar_colour;
+$buttons_plus_inside_color: $box_background; // Same as the tabnav bar
+$buttons_plus_solid_color_hover: lighten($top_bar_colour, 10);
+$buttons_plus_solid_color_click: darken($buttons_plus_solid_color, 10);
+
+// Tables
+$table_bg: $box_background;
+$table_header: darken($table_bg, 10);
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// Top bar CSS
+.skin-blue .main-header .navbar {
+    background-color: $top_bar_colour;
+}
+.skin-blue .main-header .logo {
+    background-color: $top_bar__logo_colour;
+}
+.skin-blue .main-header .logo:hover {
+    background-color: $top_bar__logo_colour_hover;
+}
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+    background-color: $sidebar_toggle_hover;
+}
+
+// Side bar CSS
+.skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+    background-color: $left_sidebar_bg;
+}
+.skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+    color: $sidebar_text;
+    background: $sidebar_background;
+    border-left-color: $sidebar_left_stripe;
+}
+
+// Main CSS
+.content-wrapper, .right-side {
+    background-color: $main_background;
+}
+
+// Tabbox CSS
+.nav-tabs-custom>.tab-content {
+    background: $box_background;
+}
+.nav-tabs-custom>.nav-tabs {
+    border-bottom-color: $box_separator_line;
+    background: $box_navbar_background;
+}
+.nav-tabs-custom>.nav-tabs>li.active:hover>a, .nav-tabs-custom>.nav-tabs>li.active>a {
+    background-color: $box_active_tab;
+}
+
+.nav-tabs-custom>.nav-tabs>li.active>a {
+    border-left-color: $box_active_tab;
+    border-right-color: $box_active_tab;
+}
+.nav-tabs-custom>.nav-tabs>li.active {
+    border-top-color: $active_tab;
+}
+
+// HR line CSS
+hr {
+    border-top: 1px solid $hr_line;
+}
+
+// Progress box CSS
+.progress-bar {
+    background-color: $progress_bar;
+}
+.shiny-notification {
+    background-color: $progress_bg;
+    border: 1px solid $progress_border;
+    color: $progress_color;
+}
+
+// Material toggles
+.material-switch>input[type=checkbox]:checked+label:after {
+    background: $toggle_bg;
+}
+.material-switch>input[type=checkbox]:checked+label:before {
+    background: $toggle_bg;
+}
+
+// Forms
+.form-control {
+    background-color: $forms_bg;
+    border-color: $forms;
+    color: $forms_text;
+}
+.form-control:focus {
+    border-color: $forms_active;
+    color: $forms_text;
+}
+.form-control:hover:not(:focus) {
+    border-color: $forms_hover;
+    color: $forms_text;
+}
+
+// Input fields
+.selectize-input {
+    border: 1px solid $inputs_border;
+}
+.selectize-input:hover {
+    border: 1px solid $inputs_border_hover;
+}
+.selectize-input, .selectize-control.single .selectize-input.input-active {
+    background: $inputs_bg;
+}
+.selectize-input.full {
+    background: $inputs_bg;
+}
+.selectize-input.focus {
+    border-color: $inputs_border_active;
+}
+.selectize-dropdown, .selectize-dropdown.form-control {
+    background: $inputs_dropdown_bg;
+}
+.selectize-input.focus { // no shadow glow
+    -webkit-box-shadow:none !important;
+    box-shadow:none !important;
+}
+.selectize-dropdown .active {background: $inputs_dropdown_bg_hover !important;}
+.item {
+    background: $inputs_bg;
+}
+.selectize-control.multi .selectize-input > div {
+    background: $inputs_multiple_bg_of_selected_elements;
+}
+.selectize-control.multi .selectize-input > div.active {
+    background: $inputs_multiple_bg_of_clicked_elements;
+}
+
+// Buttons SCSS
+.btn-default {
+    background-color: $button_bg;
+    color: $buttons_text;
+    border-color: $buttons_border;
+}
+.btn-default:hover {
+    background-color: $button_bg_hover;
+    color: $buttons_text;
+    border-color: $buttons_border_hover;
+}
+.btn-default:focus { // Focus state same as default
+    background-color: $button_bg;
+    color: $buttons_text;
+    border-color: $buttons_border;
+}
+.btn-default.active.focus, .btn-default.active:focus, .btn-default.active:hover, .btn-default:active.focus, .btn-default:active:focus, .btn-default:active:hover, .open>.dropdown-toggle.btn-default.focus, .open>.dropdown-toggle.btn-default:focus, .open>.dropdown-toggle.btn-default:hover { // On click
+    background-color: $button_bg_click;
+    color: $buttons_text;
+    border-color: $buttons_border_click;
+}
+
+// Buttons +/- SCSS
+.btn-primary {
+    background-color: $buttons_plus_solid_color;
+    border-color: $buttons_plus_solid_color;
+    color: $buttons_plus_inside_color;
+}
+.btn-primary:hover {
+    background-color: $buttons_plus_solid_color_hover;
+    border-color: $buttons_plus_solid_color_hover;
+    color: $buttons_plus_inside_color;
+}
+.btn-primary:focus { // Focus state same as default
+    background-color: $buttons_plus_solid_color;
+    color: $buttons_plus_inside_color;
+    border-color: $buttons_plus_solid_color;
+}
+.btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open>.dropdown-toggle.btn-primary.focus, .open>.dropdown-toggle.btn-primary:focus, .open>.dropdown-toggle.btn-primary:hover { // On click
+    background-color: $buttons_plus_solid_color_click;
+    color: $buttons_plus_inside_color;
+    border-color: $buttons_plus_solid_color_click;
+}
+
+// Tables CSS
+table.dataTable, table.dataTable th { // header
+    background: $table_header;
+}
+table.dataTable, table.dataTable td { // body
+    background: $table_bg;
+}
+
+table.dataTable tr.selected td, table.dataTable td.selected {
+    background-color: #000 !important;
+}

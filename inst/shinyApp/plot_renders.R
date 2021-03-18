@@ -90,8 +90,7 @@ output$manhattan <- renderPlot({
   chrCol <- 3
   posCol <- 4
   pvalCol <- 11
-  # plots$genomics_manhattan_vcf_plot <- ggplot(data) + geom_point(aes(x = pos, y = Score.pval))
-  plots$genomics_manhattan_vcf_plot <- manhattan(data, featureCol = featureCol, chrCol = chrCol,
+  plots$genomics_manhattan_vcf_plot <- dsOmicsClient::manhattan(data, featureCol = featureCol, chrCol = chrCol,
             posCol = posCol, pvalCol = pvalCol)
   plots$genomics_manhattan_vcf_plot
 })

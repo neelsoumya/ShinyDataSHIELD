@@ -68,7 +68,7 @@ output$limma_run <- renderUI({
 observeEvent(input$run_limma, {
   withProgress(message = "Performing limma model", {
     tryCatch({
-      limma_formula <- as.formula(paste0(input$limma_var_feature, " ~ ", paste0(input$limma_var_covars, collapse = " + ")))
+      limma_formula <- as.formula(paste0(input$limma_var_feature, " ~ ", paste0(c(1,input$limma_var_covars), collapse = " + ")))
       incProgress(0.4)
       limma_results$result_table <- ds.limma(model = limma_formula,
                                              Set = "resource_lim", 
@@ -78,11 +78,10 @@ observeEvent(input$run_limma, {
                                              sva = input$limma_sva,
                                              annotCols = input$limma_lab,
                                              type.data = input$limma_data_type)
-      # browser()
       incProgress(0.8)
       showElement("limma_results_table_download")
     }, error = function(w){
-      shinyalert("Oops!", "Error when performing the limma", type = "error")
+      shinyalert("Oops!", paste(datashield.errors()), type = "error")
       hideElement("limma_results_table_download")
     })
     

@@ -1,4 +1,4 @@
-FROM rocker/shiny:4.0.2 
+FROM rocker/shiny:4.0.3 
 # system libraries of general use
  
 RUN apt-get update && apt-get install -y \
@@ -44,14 +44,16 @@ RUN R -e "devtools::install_version('shinydashboard', version = '0.7.1', repos =
 RUN R -e "devtools::install_version('shinycssloaders', version = '1.0.0', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_version('DT', version = '0.15', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_version('data.table', version = '1.13.0', repos = 'http://cran.us.r-project.org')"
-RUN R -e "devtools::install_version('DSI', version = '1.2.0', repos = 'http://cran.us.r-project.org')"
-RUN R -e "devtools::install_version('DSOpal', version = '1.2.0', repos = 'http://cran.us.r-project.org')"
+RUN R -e "devtools::install_version('DSI', version = '1.2.0', repos = 'http://cran.r-project.org')"
+RUN R -e "devtools::install_version('DSOpal', version = '1.2.0', repos = 'http://cran.r-project.org')"
 RUN R -e "devtools::install_version('stringr', version = '1.4.0', repos = 'http://cran.us.r-project.org')"
 RUN R -e "install.packages('dsBaseClient', repos = c(getOption('repos'), 'http://cran.obiba.org'), dependencies = TRUE)"
 RUN R -e "devtools::install_version('ggrepel', version = '0.8.2', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('isglobal-brge/dsOmicsClient')"
 RUN R -e "devtools::install_version('shinyWidgets', version = '0.5.4', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_version('stringr', version = '1.4.0', repos = 'http://cran.us.r-project.org')"
+RUN R -e "devtools::install_version('fresh', version = '0.2.0', repos = 'http://cran.us.r-project.org')"
+RUN R -e "devtools::install_github('Mikata-Project/ggthemr')"
 
 # select port
  
