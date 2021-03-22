@@ -13,3 +13,6 @@ install.packages('dsBaseClient', repos = c(getOption('repos'), 'http://cran.obib
 devtools::install_version('ggrepel', version = '0.8.2', repos = 'http://cran.us.r-project.org', upgrade = "never")
 devtools::install_github('isglobal-brge/dsOmicsClient', force = TRUE, upgrade = "never")
 devtools::install_version('shinyWidgets', version = '0.5.4', repos = 'http://cran.us.r-project.org', upgrade = "never")
+devtools::install_version('stringr', version = '1.4.0', repos = 'http://cran.us.r-project.org')
+devtools::install_version('fresh', version = '0.2.0', repos = 'http://cran.us.r-project.org')
+devtools::install_github('Mikata-Project/ggthemr')
