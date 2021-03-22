@@ -113,7 +113,7 @@ ggeditLiteServer <- function(id, plot_name) {
         if(tryCatch({length(unique(plot_modified()$data[[rlang::as_name(plot_modified()$mapping$colour)]]))}, error = function(w){0}) > length(ggthemr::swatch()) - 1){
           ggthemr::set_swatch(colorRampPalette(ggthemr::swatch())(length(unique(plot_modified()$data[[rlang::as_name(plot_modified()$mapping$colour)]]))+1))
         }
-        plot_modified(plot_modified() + scale_colour_ggthemr_d())# + scale_fill_manual(values = ggthemr::swatch()[-1]))
+        plot_modified(plot_modified() + scale_colour_ggthemr_d() + scale_fill_manual(values = ggthemr::swatch()[-1]))
       } else{ggthemr_reset()}
     })
     output$plot_download <- downloadHandler(
