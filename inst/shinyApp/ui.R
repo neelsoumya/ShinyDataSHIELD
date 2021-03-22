@@ -249,10 +249,14 @@ body <- dashboardBody(
                                                  actionButton("gml_toggle_variables_table","Toggle variables table"),
                                           )
                                         ),
-                                              # dataTableOutput("available_variables_type"),
                                               hidden(dataTableOutput("available_variables_type")),
                                               dataTableOutput("glm_results_table"),
-                                              hidden(downloadButton("glm_results_table_download", "Download GLM results"))
+                                              hidden(downloadButton("glm_results_table_download", "Download GLM results")),
+                                              hidden(selectInput("glm_slma_method", "Meta analysis to visualize", c("Maximum Likelihood", 
+                                                                                                     "REstricted Maximum Likelihood", 
+                                                                                                     "Fixed-Effects meta-analysis"))),
+                                              hidden(plotOutput("glm_slma_plot")),
+                                              hidden(downloadButton("glm_slma_down", "Download Forestplot"))
                                      ),
                             tabPanel("Mixed effects model", value = "mixed_model",
                                      fluidRow(
@@ -270,7 +274,12 @@ body <- dashboardBody(
                                      # uiOutput("glmer_server_select"),
                                      uiOutput("glmer_results_select"),
                                      dataTableOutput("glmer_results_table"),
-                                     hidden(downloadButton("glmer_results_table_download", "Download GLMer results"))
+                                     hidden(downloadButton("glmer_results_table_download", "Download GLMer results")),
+                                     hidden(selectInput("glmer_slma_method", "Meta analysis to visualize", c("Maximum Likelihood", 
+                                                                                                           "REstricted Maximum Likelihood", 
+                                                                                                           "Fixed-Effects meta-analysis"))),
+                                     hidden(plotOutput("glmer_slma_plot")),
+                                     hidden(downloadButton("glmer_slma_down", "Download Forestplot"))
                                      )
                             )
                      )
