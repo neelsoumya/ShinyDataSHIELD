@@ -59,11 +59,11 @@ css_tab <- "
 
 options(sass.cache = FALSE)
 sass::sass(
-  sass::sass_file("../../www/theme.scss"),
-  output = "../../www/theme.css"
+  sass::sass_file("www/theme.scss"),
+  output = "www/theme.css"
   )
 
-p_color <- fread("../../www/theme.scss", skip = "$top_bar_colour: ", nrows = 1)
+p_color <- fread("www/theme.scss", skip = "$top_bar_colour: ", nrows = 1)
 p_color <- substr(colnames(p_color), 18,24)[1]
 # Set p_color for withSpinner CSS
 options(spinner.color = p_color)
@@ -89,7 +89,7 @@ sidebar <- dashboardSidebar(
 )
 
 body <- dashboardBody(
-  tags$head(includeCSS("../../www/theme.css")),
+  tags$head(includeCSS("www/theme.css")),
   # use_theme(custom_theme),
   useShinyalert(),
   useShinyjs(),

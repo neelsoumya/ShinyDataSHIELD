@@ -111,7 +111,6 @@ observeEvent(input$gmler_toggle_variables_table, {
 observeEvent(input$perform_glmer, {
   tryCatch({
     withProgress(message = "Performing GLMer", value = 0.5, {
-      browser()
       glm_results$glmer_result_table <- ds.glmerSLMA(formula = as.formula(input$glmer_formula), data = "tables_sm", family = input$gmler_output_family,
                                                      datasources = connection$conns[
                                                        as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
