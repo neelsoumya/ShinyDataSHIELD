@@ -26,7 +26,7 @@ observeEvent(input$select_tables_cols, {
     else{
       withProgress(message = "Getting the column types for selected tables", value = 0, {
         lists$table_columns_types <- NULL
-        for(var in lists$table_columns[[1]]){
+        for(var in lists$table_columns[[input$available_tables_cols_render_rows_selected[1]]]){
           type <- ds.class(paste0(lists$available_tables[input$available_tables_cols_render_rows_selected,1][1],
                                   "$", var), connection$conns[as.numeric(lists$available_tables[input$available_tables_cols_render_rows_selected,2][1])])[[1]]
           lists$table_columns_types <- cbind(lists$table_columns_types, rbind(var, paste(type, collapse = ", ")))

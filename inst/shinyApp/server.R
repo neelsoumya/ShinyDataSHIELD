@@ -6,6 +6,7 @@ server <- function(input, output, session) {
   plink_results <- reactiveValues(result_table = NULL)
   vcf_results <- reactiveValues(result_table_gwas = NULL)
   plots <- reactiveValues(ds_scatter_plot = NULL)
+  survival_models <- reactiveValues(survival_models = NULL)
   tabIndex <- reactiveVal(1)
   tables_resources <- reactiveValues()
   max_servers <- 10 # Change this to allow more servers, couldnt manage to create the observeEvents dynamically :(
@@ -32,6 +33,10 @@ server <- function(input, output, session) {
   js$disableTab("box_plot")
   js$disableTab("glm")
   js$disableTab("mixed_model")
+  js$disableTab("survival_analysis")
+  js$disableTab("survival_tab_formula")
+  js$disableTab("survival_tab_meta_analysis")
+  js$disableTab("survival_tab_visualization")
   js$disableTab("plink")
   js$disableTab("plink_plot")
   js$disableTab("gwas")

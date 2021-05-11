@@ -84,6 +84,19 @@ output$d_statistics_boxplot_plot <- renderPlot({
 #                                                  posCol = posCol, pvalCol = pvalCol)
 # })
 
+output$survival_meta_analysis_plot <- renderPlot({
+  metafor::forest.rma(x = survival_models$meta_model)
+})
+
+output$survival_plot <- renderPlot({
+  dsSurvivalClient::ds.survfit(formula='survival_object~1', objectname='survfit_object',
+                               datasources = connection$conns)
+  dsSurvivalClient::ds.plotsurvfit(formula = "survfit_object",
+                                   datasources = connection$conns[
+                                     as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
+                                   ])
+})
+
 output$manhattan <- renderPlot({
   data <- do.call("rbind", vcf_results$result_table_gwas)
   featureCol <- 2

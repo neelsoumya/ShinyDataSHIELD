@@ -2,6 +2,7 @@ library(DSI)
 library(DSOpal)
 library(dsBaseClient)
 library(dsOmicsClient)
+library(dsSurvivalClient)
 library(shinydashboard)
 library(shiny)
 library(shinyalert)
@@ -16,6 +17,7 @@ library(stringr)
 #library(thematic)
 library(fresh)
 library(ggthemr)
+library(survminer)
 
 source("ggeditLiteModule.R", local = TRUE)
 
@@ -271,6 +273,79 @@ body <- dashboardBody(
                                      uiOutput("glmer_results_select"),
                                      dataTableOutput("glmer_results_table"),
                                      hidden(downloadButton("glmer_results_table_download", "Download GLMer results"))
+                                     ),
+                            tabPanel("Survival analysis", value = "survival_analysis",
+                                     fluidRow(column(12,
+                                                     tabBox(width = 12, id = "survival_tabs",
+                                                            tabPanel("Create survival object", value = "survival_tab_object",
+                                                                     fluidRow(
+                                                                       column(6,
+                                                                              uiOutput("survival_time_start_ui"),
+                                                                              uiOutput("survival_time_end_ui"),
+                                                                              actionButton("create_survival_object", "Create survival object")
+                                                                       ),
+                                                                       column(6,
+                                                                              uiOutput("survival_event_ui"),
+                                                                              selectInput("survival_type", "Type of censoring:", c("right", "left",
+                                                                                                                                   "counting", "interval",
+                                                                                                                                   "interval2", "mstate"))
+                                                                       )
+                                                                     )
+                                                            ),
+                                                            tabPanel("Fit survival model", value = "survival_tab_formula",
+                                                                     fluidRow(
+                                                                       column(12,
+                                                                              hidden(textInput("survival_formula", "Formula:", width = "100%")),
+                                                                       )
+                                                                     ),
+                                                                     fluidRow(
+                                                                       column(4,
+                                                                              hidden(actionButton("survival_run_model", "Run cox survival model"))
+                                                                       ),
+                                                                       column(4,
+                                                                              actionButton("survival_toggle_variables_table","Toggle variables table"),
+                                                                       ),
+                                                                       column(4,
+                                                                              actionButton("trigger_formula_help_survival", "Formula input help"),
+                                                                       )
+                                                                     ),
+                                                                     fluidRow(
+                                                                       column(12,
+                                                                              hidden(dataTableOutput("available_variables_type3")),
+                                                                       )
+                                                                     ),
+                                                                     fluidRow(
+                                                                       column(12,
+                                                                              hidden(uiOutput("survival_study_ui")),
+                                                                              hidden(dataTableOutput("survival_results_table")),
+                                                                       )
+                                                                     )
+                                                            ),
+                                                            tabPanel("Meta analysis", value = "survival_tab_meta_analysis",
+                                                                     fluidRow(
+                                                                       column(6,
+                                                                              hidden(actionButton("survival_meta_analysis", "Perform meta-analysis"))
+                                                                       ),
+                                                                       column(6,
+                                                                              hidden(selectInput("survival_meta_analysis_method", "Meta-analysis method",
+                                                                                                 c("REML", "DL", "HE", "SJ", "ML", "EB", "HS", "GENQ"))),
+                                                                              hidden(uiOutput("survival_meta_analysis_variable_ui"))
+                                                                       )
+                                                                     ),
+                                                                     fluidRow(
+                                                                       column(12, hidden(plotOutput("survival_meta_analysis_plot")))
+                                                                     )
+                                                            ),
+                                                            tabPanel("Visualization of model", value = "survival_tab_visualization",
+                                                                     fluidRow(
+                                                                       column(12,
+                                                                              withSpinner(plotOutput("survival_plot"))
+                                                                       )
+                                                                     )
+                                                            )
+                                                     )
+                                                     ))
+                                     
                                      )
                             )
                      )

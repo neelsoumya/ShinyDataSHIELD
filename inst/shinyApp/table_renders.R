@@ -143,7 +143,7 @@ output$column_types_table <- renderDT({
           "});"),
       options = list(pageLength = nrow(lists$table_columns_types), scrollY = TRUE)
     )
-    path <- "../../www/" # folder containing the files dataTables.cellEdit.js
+    path <- "www/" # folder containing the files dataTables.cellEdit.js
     # and dataTables.cellEdit.css
     dep <- htmltools::htmlDependency(
       "CellEdit", "1.0.19", path,
@@ -159,6 +159,11 @@ output$available_variables_type <- renderDT(
 )
 
 output$available_variables_type2 <- renderDT(
+  lists$table_columns_types, options=list(columnDefs = list(list(visible=FALSE, targets=c(0))),
+                                          paging = FALSE, searching = FALSE)
+)
+
+output$available_variables_type3 <- renderDT(
   lists$table_columns_types, options=list(columnDefs = list(list(visible=FALSE, targets=c(0))),
                                           paging = FALSE, searching = FALSE)
 )
@@ -184,6 +189,16 @@ output$glmer_results_table <- renderDT({
 }
   , 
   options=list(paging = FALSE, searching = FALSE, scrollX = TRUE)
+)
+
+output$survival_results_table <- renderDT({
+  tryCatch({
+    round(survival_models$survival_models[[input$survival_results_table_study_selector]]$coefficients, digits = 4)
+  }, error = function(w){
+    round(survival_models$survival_models[[1]]$coefficients, digits = 4)
+  })
+  },
+  options = list(scrollX = TRUE)
 )
 
 output$limma_results_table <- renderDT({

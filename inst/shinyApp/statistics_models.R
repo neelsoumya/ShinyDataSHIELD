@@ -21,6 +21,7 @@ observeEvent(input$select_tables_sm, {
                  , type = "error")
       js$disableTab("glm")
       js$disableTab("mixed_model")
+      js$disableTab("survival_analysis")
       updateTabsetPanel(session, "statistic_models_t",
                         selected = "a_tables_sm")
     }
@@ -36,7 +37,7 @@ observeEvent(input$select_tables_sm, {
       }
       withProgress(message = "Getting the column types for selected tables", value = 0, {
         lists$table_columns_types <- NULL
-        for(var in lists$table_columns[[1]]){
+        for(var in lists$table_columns[[input$available_tables_sm_render_rows_selected[1]]]){
           type <- ds.class(paste0("tables_sm$", var), 
                            connection$conns[as.numeric(lists$available_tables[input$available_tables_sm_render_rows_selected,2][1])])[[1]]
           lists$table_columns_types <- cbind(lists$table_columns_types, rbind(var, paste(type, collapse = ", ")))
@@ -47,6 +48,7 @@ observeEvent(input$select_tables_sm, {
       colnames(lists$table_columns_types) <- c("variable", "type")
       js$enableTab("glm")
       js$enableTab("mixed_model")
+      js$enableTab("survival_analysis")
       if(length(input$available_tables_sm_render_rows_selected)>1){
         showElement("glm_approach")
       }
@@ -142,6 +144,101 @@ observeEvent(input$trigger_formula_help_glmer, {
     y~a+b+(1+b|c)
     where the effect of b can vary randomly between groups defined by c. Implicit nesting can be specified with formulas such as: 
     y~a+b+(1|c/d) or y~a+b+(1|c)+(1|c:d)", type = "info")
+})
+
+output$survival_time_start_ui <- renderUI({
+  selectInput("start_time_survival", "Start time variable:", 
+              lists$table_columns[input$available_tables_sm_render_rows_selected[1]][[1]])
+})
+
+output$survival_time_end_ui <- renderUI({
+  selectInput("end_time_survival", "End time variable:", 
+              lists$table_columns[input$available_tables_sm_render_rows_selected[1]][[1]])
+})
+
+output$survival_event_ui <- renderUI({
+  selectInput("event_survival", "Event variable:", 
+              lists$table_columns[input$available_tables_sm_render_rows_selected[1]][[1]])
+})
+
+observeEvent(input$create_survival_object, {
+  tryCatch({
+    ds.Surv(time = paste0("tables_sm$", input$start_time_survival), 
+            time2 = paste0("tables_sm$", input$end_time_survival),
+            event = paste0("tables_sm$", input$event_survival),
+            type = input$survival_type, objectname = "survival_object",
+            datasources = connection$conns[
+              as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
+            ])
+    showNotification("Survival model successfully created", duration = 2, closeButton = FALSE, type = "default")
+    showElement("survival_formula")
+    showElement("survival_run_model")
+    js$enableTab("survival_tab_formula")
+  }, error = function(w){
+    shinyalert("Oops!", as.character(datashield.errors()), type = "error")
+    hideElement("survival_formula")
+    hideElement("survival_run_model")
+    js$disableTab("survival_tab_formula")
+    js$disableTab("survival_tab_meta_analysis")
+    js$disableTab("survival_tab_visualization")
+  })
+})
+
+observeEvent(input$survival_toggle_variables_table, {
+  toggleElement("available_variables_type3")
+})
+
+observeEvent(input$trigger_formula_help_survival, {
+  shinyalert("Formula structure", "Please input the formula as:
+             'survival_object~tables_sm$variable+tables_sm$variable2'
+             The supported formula characters are: '+ | ( ) / : , survival::strata()'", type = "info")
+})
+
+observeEvent(input$survival_run_model, {
+  tryCatch({
+    survival_models$survival_models <- ds.coxph.SLMA(formula = input$survival_formula,
+                                                     datasources = connection$conns[
+                                                       as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
+                                                     ])
+    output$survival_study_ui <- renderUI({
+      selectInput("survival_results_table_study_selector", "Select study server:", names(survival_models$survival_models))
+    })
+    if(length(survival_models$survival_models) > 1){
+      showElement("survival_study_ui")
+    }
+    output$survival_meta_analysis_variable_ui <- renderUI({
+      selectInput("survival_meta_analysis_variable", "Meta-analysis variable",
+                  rownames(survival_models$survival_models$Study1$coefficients))
+    })
+    
+    showElement("survival_results_table")
+    showElement("survival_meta_analysis")
+    showElement("survival_meta_analysis_method")
+    showElement("survival_meta_analysis_variable_ui")
+    js$enableTab("survival_tab_meta_analysis")
+    js$enableTab("survival_tab_visualization")
+  }, error = function(w){
+    shinyalert("Oops!", as.character(datashield.errors()), type = "error")
+    hideElement("survival_results_table")
+    hideElement("survival_study_ui")
+    hideElement("survival_meta_analysis")
+    hideElement("survival_meta_analysis_method")
+    hideElement("survival_meta_analysis_variable_ui")
+    hideElement("survival_meta_analysis_plot")
+    js$disableTab("survival_tab_meta_analysis")
+    js$disableTab("survival_tab_visualization")
+  })
+})
+
+observeEvent(input$survival_meta_analysis, {
+  objective_rows <- lapply(survival_models$survival_models, function(x){
+    x$coefficients[which(rownames(x$coefficients) == input$survival_meta_analysis_variable),]
+  })
+  objective_rows_mixed <- do.call(rbind, objective_rows)
+  logHR <- objective_rows_mixed[,2]
+  se <- objective_rows_mixed[,3]
+  survival_models$meta_model <- metafor::rma(logHR, sei = se, method = input$survival_meta_analysis_method)
+  showElement("survival_meta_analysis_plot")
 })
 
 observe({

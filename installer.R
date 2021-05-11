@@ -17,3 +17,5 @@ devtools::install_version('stringr', version = '1.4.0', repos = 'http://cran.us.
 devtools::install_version('fresh', version = '0.2.0', repos = 'http://cran.us.r-project.org')
 devtools::install_version('panelaggregation', version = '0.1.1', repos = 'http://cran.us.r-project.org')
 devtools::install_github('Mikata-Project/ggthemr')
+devtools::install_github('neelsoumya/dsSurvivalClient')
+devtools::install_version('survminer', version = '0.4.9', repos = 'http://cran.us.r-project.org')
