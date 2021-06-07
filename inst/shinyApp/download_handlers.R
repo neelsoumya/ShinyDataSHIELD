@@ -126,3 +126,25 @@ output$genomics_manhattan_vcf_plot_download <- downloadHandler(
     ggsave(file, plot = last_plot())
   }
 )
+
+output$survival_results_table_download <- downloadHandler(
+  filename = "survival_results_table.csv",
+  content = function(file) {
+    write.csv(
+      tryCatch({
+        round(survival_models$survival_models[[input$survival_results_table_study_selector]]$coefficients, digits = 4)
+      }, error = function(w){
+        round(survival_models$survival_models[[1]]$coefficients, digits = 4)
+      }), file, row.names = TRUE, quote = F)
+  }
+)
+
+output$survival_plot_download <- downloadHandler(
+  filename = "survival_plot.png",
+  content = function(file) {
+    png(file = file)
+    plots$survival_plot()
+    dev.off()
+  }
+)
+

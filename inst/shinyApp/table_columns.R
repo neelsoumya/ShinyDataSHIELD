@@ -159,12 +159,25 @@ observe({
   if(input$tabs == "table_columns_a") {
     # Get column names from available tables
     tables_available <- lists$available_tables[type_resource == "table"]
+    tables_available_aux <- tables_available
+    aux <- list()
     if(length(lists$tables_columns) == 0){
       withProgress(message = "Reading column names from available tables", value = 0, {
-        for(i in 1:nrow(tables_available)){
-          lists$table_columns[[as.character(tables_available[i,1])]] <- ds.colnames(as.character(tables_available[i,1]), datasources = connection$conns[as.numeric(tables_available[i,2])])[[1]]
-          incProgress(i/nrow(tables_available))
+        while(any(duplicated(tables_available_aux$server))){
+          duplicateds <- !duplicated(tables_available_aux$server)
+          expr <- as.list(paste0("colnamesDS('", tables_available_aux$name[duplicateds], "')"))
+          names(expr) <- tables_available_aux$server[duplicateds]
+          table_columns <- DSI::datashield.aggregate(connection$conns, expr)
+          names(table_columns) <- tables_available_aux$name[duplicateds]
+          tables_available_aux <- tables_available_aux[!duplicateds,]
+          aux <- c(aux, table_columns)
         }
+        expr <- as.list(paste0("colnamesDS('", tables_available_aux$name, "')"))
+        names(expr) <- tables_available_aux$server
+        table_columns <- DSI::datashield.aggregate(connection$conns, expr)
+        names(table_columns) <- tables_available_aux$name
+        aux <- c(aux, table_columns)
+        lists$table_columns <- aux[tables_available$name]
       })
     }
     output$available_tables_cols <- renderUI({

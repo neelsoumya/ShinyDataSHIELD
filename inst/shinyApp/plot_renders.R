@@ -91,10 +91,13 @@ output$survival_meta_analysis_plot <- renderPlot({
 output$survival_plot <- renderPlot({
   dsSurvivalClient::ds.survfit(formula='survival_object~1', objectname='survfit_object',
                                datasources = connection$conns)
-  dsSurvivalClient::ds.plotsurvfit(formula = "survfit_object",
-                                   datasources = connection$conns[
-                                     as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
-                                   ])
+  plots$survival_plot <- function(){
+    dsSurvivalClient::ds.plotsurvfit(formula = "survfit_object",
+                                     datasources = connection$conns[
+                                       as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
+                                     ])
+  }
+  plots$survival_plot()
 })
 
 output$manhattan <- renderPlot({

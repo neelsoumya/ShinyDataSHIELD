@@ -143,6 +143,8 @@ observe({
     
     # Get column names from available tables
     tables_available <- lists$available_tables[type_resource %in% c("table")]
+    tables_available_aux <- tables_available
+    aux <- list()
     if(length(lists$vcf_covars) == 0){
       withProgress(message = "Reading column names from available tables", value = 0, {
         for(i in 1:nrow(tables_available)){

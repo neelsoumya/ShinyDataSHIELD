@@ -318,6 +318,7 @@ body <- dashboardBody(
                                                                        column(12,
                                                                               hidden(uiOutput("survival_study_ui")),
                                                                               hidden(dataTableOutput("survival_results_table")),
+                                                                              hidden(downloadButton("survival_results_table_download", "Download survival results"))
                                                                        )
                                                                      )
                                                             ),
@@ -339,7 +340,8 @@ body <- dashboardBody(
                                                             tabPanel("Visualization of model", value = "survival_tab_visualization",
                                                                      fluidRow(
                                                                        column(12,
-                                                                              withSpinner(plotOutput("survival_plot"))
+                                                                              withSpinner(plotOutput("survival_plot")),
+                                                                              downloadButton("survival_plot_download", "Download plot")
                                                                        )
                                                                      )
                                                             )

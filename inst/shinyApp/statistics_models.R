@@ -215,6 +215,7 @@ observeEvent(input$survival_run_model, {
     showElement("survival_meta_analysis")
     showElement("survival_meta_analysis_method")
     showElement("survival_meta_analysis_variable_ui")
+    showElement("survival_results_table_download")
     js$enableTab("survival_tab_meta_analysis")
     js$enableTab("survival_tab_visualization")
   }, error = function(w){
@@ -225,6 +226,7 @@ observeEvent(input$survival_run_model, {
     hideElement("survival_meta_analysis_method")
     hideElement("survival_meta_analysis_variable_ui")
     hideElement("survival_meta_analysis_plot")
+    hideElement("survival_results_table_download")
     js$disableTab("survival_tab_meta_analysis")
     js$disableTab("survival_tab_visualization")
   })
@@ -245,12 +247,25 @@ observe({
   if(input$tabs == "statistic_models") {
     # Get column names from available tables
     tables_available <- lists$available_tables[type_resource == "table"]
+    tables_available_aux <- tables_available
+    aux <- list()
     if(length(lists$tables_columns) == 0){
       withProgress(message = "Reading column names from available tables", value = 0, {
-        for(i in 1:nrow(tables_available)){
-          lists$table_columns[[as.character(tables_available[i,1])]] <- ds.colnames(as.character(tables_available[i,1]), datasources = connection$conns[as.numeric(tables_available[i,2])])[[1]]
-          incProgress(i/nrow(tables_available))
+        while(any(duplicated(tables_available_aux$server))){
+          duplicateds <- !duplicated(tables_available_aux$server)
+          expr <- as.list(paste0("colnamesDS('", tables_available_aux$name[duplicateds], "')"))
+          names(expr) <- tables_available_aux$server[duplicateds]
+          table_columns <- DSI::datashield.aggregate(connection$conns, expr)
+          names(table_columns) <- tables_available_aux$name[duplicateds]
+          tables_available_aux <- tables_available_aux[!duplicateds,]
+          aux <- c(aux, table_columns)
         }
+        expr <- as.list(paste0("colnamesDS('", tables_available_aux$name, "')"))
+        names(expr) <- tables_available_aux$server
+        table_columns <- DSI::datashield.aggregate(connection$conns, expr)
+        names(table_columns) <- tables_available_aux$name
+        aux <- c(aux, table_columns)
+        lists$table_columns <- aux[tables_available$name]
       })
     }
     output$available_tables_sm <- renderUI({
