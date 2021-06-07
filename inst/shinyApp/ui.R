@@ -2,7 +2,6 @@ library(DSI)
 library(DSOpal)
 library(dsBaseClient)
 library(dsOmicsClient)
-library(dsSurvivalClient)
 library(shinydashboard)
 library(shiny)
 library(shinyalert)
@@ -17,7 +16,6 @@ library(stringr)
 #library(thematic)
 library(fresh)
 library(ggthemr)
-library(survminer)
 
 source("ggeditLiteModule.R", local = TRUE)
 
@@ -61,11 +59,11 @@ css_tab <- "
 
 options(sass.cache = FALSE)
 sass::sass(
-  sass::sass_file("www/theme.scss"),
-  output = "www/theme.css"
+  sass::sass_file("../../www/theme.scss"),
+  output = "../../www/theme.css"
   )
 
-p_color <- fread("www/theme.scss", skip = "$top_bar_colour: ", nrows = 1)
+p_color <- fread("../../www/theme.scss", skip = "$top_bar_colour: ", nrows = 1)
 p_color <- substr(colnames(p_color), 18,24)[1]
 # Set p_color for withSpinner CSS
 options(spinner.color = p_color)
@@ -91,7 +89,7 @@ sidebar <- dashboardSidebar(
 )
 
 body <- dashboardBody(
-  tags$head(includeCSS("www/theme.css")),
+  tags$head(includeCSS("../../www/theme.css")),
   # use_theme(custom_theme),
   useShinyalert(),
   useShinyjs(),
@@ -251,10 +249,14 @@ body <- dashboardBody(
                                                  actionButton("gml_toggle_variables_table","Toggle variables table"),
                                           )
                                         ),
-                                              # dataTableOutput("available_variables_type"),
                                               hidden(dataTableOutput("available_variables_type")),
                                               dataTableOutput("glm_results_table"),
-                                              hidden(downloadButton("glm_results_table_download", "Download GLM results"))
+                                              hidden(downloadButton("glm_results_table_download", "Download GLM results")),
+                                              hidden(selectInput("glm_slma_method", "Meta analysis to visualize", c("Maximum Likelihood", 
+                                                                                                     "REstricted Maximum Likelihood", 
+                                                                                                     "Fixed-Effects meta-analysis"))),
+                                              hidden(plotOutput("glm_slma_plot")),
+                                              hidden(downloadButton("glm_slma_down", "Download Forestplot"))
                                      ),
                             tabPanel("Mixed effects model", value = "mixed_model",
                                      fluidRow(
@@ -272,82 +274,12 @@ body <- dashboardBody(
                                      # uiOutput("glmer_server_select"),
                                      uiOutput("glmer_results_select"),
                                      dataTableOutput("glmer_results_table"),
-                                     hidden(downloadButton("glmer_results_table_download", "Download GLMer results"))
-                                     ),
-                            tabPanel("Survival analysis", value = "survival_analysis",
-                                     fluidRow(column(12,
-                                                     tabBox(width = 12, id = "survival_tabs",
-                                                            tabPanel("Create survival object", value = "survival_tab_object",
-                                                                     fluidRow(
-                                                                       column(6,
-                                                                              uiOutput("survival_time_start_ui"),
-                                                                              uiOutput("survival_time_end_ui"),
-                                                                              actionButton("create_survival_object", "Create survival object")
-                                                                       ),
-                                                                       column(6,
-                                                                              uiOutput("survival_event_ui"),
-                                                                              selectInput("survival_type", "Type of censoring:", c("right", "left",
-                                                                                                                                   "counting", "interval",
-                                                                                                                                   "interval2", "mstate"))
-                                                                       )
-                                                                     )
-                                                            ),
-                                                            tabPanel("Fit survival model", value = "survival_tab_formula",
-                                                                     fluidRow(
-                                                                       column(12,
-                                                                              hidden(textInput("survival_formula", "Formula:", width = "100%")),
-                                                                       )
-                                                                     ),
-                                                                     fluidRow(
-                                                                       column(4,
-                                                                              hidden(actionButton("survival_run_model", "Run cox survival model"))
-                                                                       ),
-                                                                       column(4,
-                                                                              actionButton("survival_toggle_variables_table","Toggle variables table"),
-                                                                       ),
-                                                                       column(4,
-                                                                              actionButton("trigger_formula_help_survival", "Formula input help"),
-                                                                       )
-                                                                     ),
-                                                                     fluidRow(
-                                                                       column(12,
-                                                                              hidden(dataTableOutput("available_variables_type3")),
-                                                                       )
-                                                                     ),
-                                                                     fluidRow(
-                                                                       column(12,
-                                                                              hidden(uiOutput("survival_study_ui")),
-                                                                              hidden(dataTableOutput("survival_results_table")),
-                                                                              hidden(downloadButton("survival_results_table_download", "Download survival results"))
-                                                                       )
-                                                                     )
-                                                            ),
-                                                            tabPanel("Meta analysis", value = "survival_tab_meta_analysis",
-                                                                     fluidRow(
-                                                                       column(6,
-                                                                              hidden(actionButton("survival_meta_analysis", "Perform meta-analysis"))
-                                                                       ),
-                                                                       column(6,
-                                                                              hidden(selectInput("survival_meta_analysis_method", "Meta-analysis method",
-                                                                                                 c("REML", "DL", "HE", "SJ", "ML", "EB", "HS", "GENQ"))),
-                                                                              hidden(uiOutput("survival_meta_analysis_variable_ui"))
-                                                                       )
-                                                                     ),
-                                                                     fluidRow(
-                                                                       column(12, hidden(plotOutput("survival_meta_analysis_plot")))
-                                                                     )
-                                                            ),
-                                                            tabPanel("Visualization of model", value = "survival_tab_visualization",
-                                                                     fluidRow(
-                                                                       column(12,
-                                                                              withSpinner(plotOutput("survival_plot")),
-                                                                              downloadButton("survival_plot_download", "Download plot")
-                                                                       )
-                                                                     )
-                                                            )
-                                                     )
-                                                     ))
-                                     
+                                     hidden(downloadButton("glmer_results_table_download", "Download GLMer results")),
+                                     hidden(selectInput("glmer_slma_method", "Meta analysis to visualize", c("Maximum Likelihood", 
+                                                                                                           "REstricted Maximum Likelihood", 
+                                                                                                           "Fixed-Effects meta-analysis"))),
+                                     hidden(plotOutput("glmer_slma_plot")),
+                                     hidden(downloadButton("glmer_slma_down", "Download Forestplot"))
                                      )
                             )
                      )

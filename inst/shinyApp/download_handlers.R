@@ -48,6 +48,15 @@ output$glm_results_table_download <- downloadHandler(
   }
 )
 
+output$glm_slma_down <- downloadHandler(
+  filename = "glm_slma.png",
+  content = function(file) {
+    png(file = file)
+    plots$glm_slma()
+    dev.off()
+  }
+)
+
 output$glmer_results_table_download <- downloadHandler(
   filename = "glmer_results_table.csv",
   content = function(file) {
@@ -55,6 +64,15 @@ output$glmer_results_table_download <- downloadHandler(
       eval(str2expression(paste0("glm_results$glmer_result_table$output.summary$", input$glmer_results_select_value, "$coefficients")))
     }else{try(eval(str2expression(paste0("glm_results$glmer_result_table$output.summary$", input$glmer_results_select_value))))}, 
               file, quote = F)
+  }
+)
+
+output$glmer_slma_down <- downloadHandler(
+  filename = "glmer_slma.png",
+  content = function(file) {
+    png(file = file)
+    plots$glmer_slma()
+    dev.off()
   }
 )
 

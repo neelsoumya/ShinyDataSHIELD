@@ -70,6 +70,9 @@ observeEvent(input$perform_glm, {
   if(is.null(approach)){approach <- "Pooled"}
   if(approach == "Pooled"){
     tryCatch({
+      hideElement("glm_slma_method")
+      hideElement("glm_slma_plot")
+      hideElement("glm_slma_down")
       withProgress(message = "Performing GLM", value = 0.5, {
         glm_results$glm_result_table <- ds.glm(formula = as.formula(input$glm_formula), data = "tables_sm", family = input$gml_output_family,
                                                datasources = connection$conns[
@@ -91,6 +94,9 @@ observeEvent(input$perform_glm, {
                                                ])
       })
       showElement("glm_results_table_download")
+      showElement("glm_slma_method")
+      showElement("glm_slma_plot")
+      showElement("glm_slma_down")
     }, error = function(w){
       shinyalert("Oops!", "Check whether the variables are properly written and/or your dependent variable fits the output family", type = "error")
       hideElement("glm_results_table_download")
@@ -117,6 +123,9 @@ observeEvent(input$perform_glmer, {
                                                      datasources = connection$conns[
                                                        as.numeric(unlist(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected, 2]))
                                                      ])
+      showElement("glmer_slma_method")
+      showElement("glmer_slma_plot")
+      showElement("glmer_slma_down")
     })
     output$glmer_results_select <- renderUI({
       selectInput("glmer_results_select_value", "Select results to display", names(glm_results$glmer_result_table$output.summary))

@@ -72,17 +72,26 @@ output$d_statistics_boxplot_plot <- renderPlot({
   }, error = function(w){})
 })
 
-# callModule(ggEdit,'pOut1',obj=reactive(plots$ds_boxplot))
+output$glm_slma_plot <- renderPlot({
+  plots$glm_slma <- function(){
+    method_lookup <- c("ML", "REML", "FE")
+    names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood", "Fixed-Effects meta-analysis")
+    method <- method_lookup[input$glm_slma_method]
+    tryCatch({ds.forestplot(glm_results$glm_result_table, method)}, error = function(w){})
+  }
+  plots$glm_slma()
+})
 
-# observeEvent(input$plot, {
-#   data <- do.call("rbind", vcf_results$result_table_gwas)
-#   featureCol <- 2
-#   chrCol <- 3
-#   posCol <- 4
-#   pvalCol <- 11
-#   plots$genomics_manhattan_vcf_plot <- manhattan(data, featureCol = featureCol, chrCol = chrCol,
-#                                                  posCol = posCol, pvalCol = pvalCol)
-# })
+output$glmer_slma_plot <- renderPlot({
+  plots$glmer_slma <- function(){
+    browser()
+    method_lookup <- c("ML", "REML", "FE")
+    names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood", "Fixed-Effects meta-analysis")
+    method <- method_lookup[input$glmer_slma_method]
+    tryCatch({ds.forestplot(glm_results$glmer_result_table, method)}, error = function(w){})
+  }
+  plots$glmer_slma()
+})
 
 output$survival_meta_analysis_plot <- renderPlot({
   metafor::forest.rma(x = survival_models$meta_model)
