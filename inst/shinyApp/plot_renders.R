@@ -84,7 +84,6 @@ output$glm_slma_plot <- renderPlot({
 
 output$glmer_slma_plot <- renderPlot({
   plots$glmer_slma <- function(){
-    browser()
     method_lookup <- c("ML", "REML", "FE")
     names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood", "Fixed-Effects meta-analysis")
     method <- method_lookup[input$glmer_slma_method]
@@ -111,10 +110,10 @@ output$survival_plot <- renderPlot({
 
 output$manhattan <- renderPlot({
   data <- do.call("rbind", vcf_results$result_table_gwas)
-  featureCol <- 2
-  chrCol <- 3
-  posCol <- 4
-  pvalCol <- 11
+  featureCol <- 1
+  chrCol <- 2
+  posCol <- 3
+  pvalCol <- 6
   plots$genomics_manhattan_vcf_plot <- dsOmicsClient::manhattan(data, featureCol = featureCol, chrCol = chrCol,
             posCol = posCol, pvalCol = pvalCol)
   plots$genomics_manhattan_vcf_plot

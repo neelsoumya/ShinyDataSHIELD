@@ -217,7 +217,7 @@ observeEvent(input$survival_run_model, {
     }
     output$survival_meta_analysis_variable_ui <- renderUI({
       selectInput("survival_meta_analysis_variable", "Meta-analysis variable",
-                  rownames(survival_models$survival_models$Study1$coefficients))
+                  rownames(survival_models$survival_models[[1]]$coefficients))
     })
     
     showElement("survival_results_table")

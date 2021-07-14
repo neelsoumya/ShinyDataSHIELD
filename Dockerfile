@@ -31,7 +31,7 @@ COPY /inst/shinyApp/ /srv/shiny-server/R/
 
 # copy the contents of www folder to image
  
-COPY /www/ /srv/www/
+COPY /inst/shinyApp/www/ /srv/www/
 
 # install R packages
 
@@ -54,8 +54,9 @@ RUN R -e "devtools::install_version('shinyWidgets', version = '0.5.4', repos = '
 RUN R -e "devtools::install_version('stringr', version = '1.4.0', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_version('fresh', version = '0.2.0', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('Mikata-Project/ggthemr')"
-RUN R -e "devtools::install_github('neelsoumya/dsSurvivalClient')"
+RUN R -e "devtools::install_github('neelsoumya/dsSurvivalClient', 'privacy_survival_curves')"
 RUN R -e "devtools::install_version('survminer', version = '0.4.9', repos = 'http://cran.us.r-project.org')"
+RUN R -e "install.packages('forestplot')"
 
 # select port
  
