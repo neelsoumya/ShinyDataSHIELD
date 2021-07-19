@@ -134,12 +134,15 @@ body <- dashboardBody(
                                   ),
                                   hr(),
                                   fluidRow(
-                                    column(12,
+                                    column(6,
                                            hidden(tags$div(id = "tb_1",
                                              materialSwitch(inputId = "tbl_res1", label = "Resources", inline = TRUE, value = T),
                                              tags$span("Tables")
                                            ))
-                                    )
+                                    ),
+                                    column(6,
+                                           uiOutput("profile_selector1")
+                                           )
                                   ),
                                   fluidRow(
                                     column(6,
