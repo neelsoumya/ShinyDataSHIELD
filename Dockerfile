@@ -15,24 +15,6 @@ RUN apt-get update && apt-get install -y \
 
 # Install R Dependencies - installs the r packages you need - if this step fails you’re likely 
 # missing system libraries that a package requires
- 
- 
-# copy shiny-server.sh to image
- 
-COPY shiny-server.sh /usr/bin/
-  
-# copy shiny server config to image
- 
-COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
-
-# copy the contents of app folder to image
- 
-COPY /inst/shinyApp/ /srv/shiny-server/R/
-
-# copy the contents of www folder to image
- 
-COPY /inst/shinyApp/www/ /srv/www/
-
 # install R packages
 
 RUN R -e "install.packages('devtools')"
@@ -57,6 +39,22 @@ RUN R -e "devtools::install_github('Mikata-Project/ggthemr')"
 RUN R -e "devtools::install_github('neelsoumya/dsSurvivalClient', 'privacy_survival_curves')"
 RUN R -e "devtools::install_version('survminer', version = '0.4.9', repos = 'http://cran.us.r-project.org')"
 RUN R -e "install.packages('forestplot')"
+
+# copy shiny-server.sh to image
+ 
+COPY shiny-server.sh /usr/bin/
+  
+# copy shiny server config to image
+ 
+COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
+
+# copy the contents of app folder to image
+ 
+COPY /inst/shinyApp/ /srv/shiny-server/R/
+
+# copy the contents of www folder to image
+ 
+COPY /inst/shinyApp/www/ /srv/www/
 
 # select port
  
