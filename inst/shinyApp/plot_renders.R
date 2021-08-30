@@ -93,7 +93,9 @@ output$glmer_slma_plot <- renderPlot({
 })
 
 output$survival_meta_analysis_plot <- renderPlot({
-  metafor::forest.rma(x = survival_models$meta_model)
+  metafor::forest.rma(x = survival_models$meta_model,
+                      digits = 3L,
+                      slab = unlist(unique(lists$available_tables[input$available_tables_sm_render_rows_selected,3])))
 })
 
 output$survival_plot <- renderPlot({

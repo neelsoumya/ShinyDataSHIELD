@@ -354,27 +354,27 @@ observeEvent(input$connect_selected, {
       
       ## table_columns_a. Accepts "table"
       if(any(unique(lists$available_tables$type_resource) %in% c("table"))) {
-        show(selector = "ul li:eq(1)")
+        show(selector = "ul li:eq(2)")
       }
       
       ## d_statistics. Accepts "table", "r_obj_eset", "r_obj_rse"
       if(any(unique(lists$available_tables$type_resource) %in% c("table"))) {
-        show(selector = "ul li:eq(2)")
+        show(selector = "ul li:eq(3)")
       }
       
       ## statistics_model. Accepts "table"
       if(any(unique(lists$available_tables$type_resource) %in% c("table"))) {
-        show(selector = "ul li:eq(3)")
+        show(selector = "ul li:eq(4)")
       }
       
       ## genomics. Accepts "ssh" and "r_obj_vcf"
       if(any(unique(lists$available_tables$type_resource) %in% c("ssh", "r_obj_vcf"))) {
-        show(selector = "ul li:eq(4)")
+        show(selector = "ul li:eq(5)")
       }
       
       ## omics. Accepts 
       if(any(unique(lists$available_tables$type_resource) %in% c("r_obj_rse", "r_obj_eset"))) {
-        show(selector = "ul li:eq(7)")
+        show(selector = "ul li:eq(8)")
       }
       
       connection$active <- TRUE

@@ -26,8 +26,8 @@ RUN R -e "devtools::install_version('shinydashboard', version = '0.7.1', repos =
 RUN R -e "devtools::install_version('shinycssloaders', version = '1.0.0', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_version('DT', version = '0.15', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_version('data.table', version = '1.13.0', repos = 'http://cran.us.r-project.org')"
-RUN R -e "devtools::install_version('DSI', version = '1.2.0', repos = 'http://cran.r-project.org')"
-RUN R -e "devtools::install_version('DSOpal', version = '1.2.0', repos = 'http://cran.r-project.org')"
+RUN R -e "devtools::install_version('DSI', version = '1.3.0', repos = 'http://cran.r-project.org')"
+RUN R -e "devtools::install_version('DSOpal', version = '1.3.0', repos = 'http://cran.r-project.org')"
 RUN R -e "devtools::install_version('stringr', version = '1.4.0', repos = 'http://cran.us.r-project.org')"
 RUN R -e "install.packages('dsBaseClient', repos = c(getOption('repos'), 'http://cran.obiba.org'), dependencies = TRUE)"
 RUN R -e "devtools::install_version('ggrepel', version = '0.8.2', repos = 'http://cran.us.r-project.org')"
@@ -56,6 +56,10 @@ COPY /inst/shinyApp/ /srv/shiny-server/R/
  
 COPY /inst/shinyApp/www/ /srv/www/
 
+# copy the description file to have the version number to be displayed
+
+COPY DESCRIPTION /srv/shiny-server/R/
+
 # select port
  
 EXPOSE 80
@@ -67,4 +71,4 @@ RUN sudo chown -R shiny:shiny /srv/shiny-server
 # Change access permissions to shiny-server.sh - did not need this for my purposes
  
 RUN ["chmod", "+x", "/usr/bin/shiny-server.sh"] 
- 
+

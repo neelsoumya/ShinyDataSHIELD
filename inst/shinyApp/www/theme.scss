@@ -249,3 +249,11 @@ table.dataTable, table.dataTable td { // body
 table.dataTable tr.selected td, table.dataTable td.selected {
     background-color: #000 !important;
 }
+
+// Footer CSS
+footer {
+  width: 100%;
+  display: inline-block;
+  margin: 2em 0;
+  background-color: $top_bar_colour;
+}
