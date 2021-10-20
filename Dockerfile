@@ -40,6 +40,10 @@ RUN R -e "devtools::install_github('neelsoumya/dsSurvivalClient', 'privacy_survi
 RUN R -e "devtools::install_version('survminer', version = '0.4.9', repos = 'http://cran.us.r-project.org')"
 RUN R -e "install.packages('forestplot')"
 
+# Install CA certificates
+
+RUN apt-get --no-install-recommends install -y ca-certificates
+
 # copy shiny-server.sh to image
  
 COPY shiny-server.sh /usr/bin/
