@@ -25,7 +25,7 @@ observeEvent(input$add, {
                                               }
                                               });'
                                            )))),
-                                           passwordInput(paste0("password", tabIndex()), "Password", value = "password")
+                                           passwordInput(paste0("password", tabIndex()), "Password", value = "P@ssw0rd")
                                          ),
                                          materialSwitch(inputId = paste0("pat_switch", tabIndex()), label = "Use Personal Access Token", status = "primary")
                                   )
