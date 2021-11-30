@@ -89,7 +89,15 @@ sidebar <- dashboardSidebar(
     hidden(menuItem("Omics", tabName = "omics",
              menuSubItem("LIMMA", tabName = "limma")
              ))
-  )
+  ),
+  tags$footer(HTML(paste0("<footer>",
+                          "<div class='footer-copyright text-center py-3'>&copy 2021 - ISGlobal-BRGE.  v",
+                          tryCatch({as.character(read.dcf("DESCRIPTION", fields = "Version"))}, # Docker
+                                   error = function(w){as.character(read.dcf("../../DESCRIPTION", fields = "Version"))}), # Local
+                          "</div></footer>")),
+              style = "background-color:transparent;
+                       position:absolute;
+                       bottom:0;")
 )
 
 body <- dashboardBody(
@@ -134,12 +142,15 @@ body <- dashboardBody(
                                   ),
                                   hr(),
                                   fluidRow(
-                                    column(12,
+                                    column(6,
                                            hidden(tags$div(id = "tb_1",
                                              materialSwitch(inputId = "tbl_res1", label = "Resources", inline = TRUE, value = T),
                                              tags$span("Tables")
                                            ))
-                                    )
+                                    ),
+                                    column(6,
+                                           uiOutput("profile_selector1")
+                                           )
                                   ),
                                   fluidRow(
                                     column(6,
@@ -213,7 +224,7 @@ body <- dashboardBody(
                               withSpinner(plotOutput("d_statistics_heatmap_plot")),
                               downloadButton("d_statistics_heatmap_plot_download", "Download plot")
                      ),
-                     tabPanel("Box Plot", value = "box_plot",
+                     tabPanel("Box plot", value = "box_plot",
                               fluidRow(
                                 column(6,
                                        uiOutput("d_statistics_variable_selector_boxplot_approach"),
@@ -311,7 +322,7 @@ body <- dashboardBody(
                                                                      ),
                                                                      fluidRow(
                                                                        column(4,
-                                                                              hidden(actionButton("survival_run_model", "Run cox survival model"))
+                                                                              hidden(actionButton("survival_run_model", "Run Cox survival model"))
                                                                        ),
                                                                        column(4,
                                                                               actionButton("survival_toggle_variables_table","Toggle variables table"),
@@ -447,9 +458,15 @@ body <- dashboardBody(
     )
   )
 )
+  
 # Put them together into a dashboardPage
 dashboardPage(
-  dashboardHeader(title = "DataSHIELD"),
+  dashboardHeader(title = "DataSHIELD",
+                  tags$li(a(href = 'https://isglobal-brge.github.io/ShinyDataSHIELD_bookdown/',
+                            icon("book"),
+                            title = "User guide",
+                            target = "_blank"),
+                          class = "dropdown")),
   sidebar,
   body
 )

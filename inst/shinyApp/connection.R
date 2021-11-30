@@ -32,13 +32,16 @@ observeEvent(input$add, {
                                 ),
                                 hr(),
                                 fluidRow(
-                                  column(12,
+                                  column(6,
                                          hidden(tags$div(id = paste0("tb_", tabIndex()),
                                                          materialSwitch(inputId = paste0("tbl_res", tabIndex()), 
                                                                         label = "Resources", inline = TRUE, value = T),
                                                          tags$span("Tables")
                                          ))
-                                  )
+                                  ),
+                                  column(6,
+                                         uiOutput(paste0("profile_selector", tabIndex())),
+                                         )
                                 ),
                                 fluidRow(
                                   column(6,
@@ -125,6 +128,10 @@ lapply(1:max_servers, function(x){
         projects_res <- data.table()
       }
       
+      # Get available profiles
+      profiles <- tryCatch({dsListProfiles(conns[[paste0("server", x)]])$available}, 
+                                           error = function(w) {data.table()})
+      
       datashield.logout(conns)
       
       output[[paste0("project_selector", x)]] <- renderUI({
@@ -135,6 +142,10 @@ lapply(1:max_servers, function(x){
           selectInput(paste0("project_selected", x), "Project", projects_res, selected = NULL)
         }
       })
+      output[[paste0("profile_selector", x)]] <- renderUI({
+        selectInput(paste0("profile_selected", x), "Profile", profiles)
+      })
+        
       toggleElement(paste0("add_server", x))
       # toggleElement(paste0("remove_server", x))
       toggleElement(paste0("connect_server", x))
@@ -186,7 +197,8 @@ lapply(1:max_servers, function(x){
                                                                                        study_server = paste0("Study", x),
                                                                                        project = input[[paste0("project_selected", x)]], 
                                                                                        resources = NA, 
-                                                                                       table = paste(input[[paste0("resource_selected", x)]])))
+                                                                                       table = paste(input[[paste0("resource_selected", x)]]),
+                                                                                       profile = input[[paste0("profile_selected", x)]]))
         }
         else{
           showNotification("Duplicate tables not allowed", duration = 2, closeButton = FALSE, type = "error")
@@ -208,7 +220,8 @@ lapply(1:max_servers, function(x){
                                                                                        study_server = paste0("Study", x),
                                                                                        project = input[[paste0("project_selected", x)]], 
                                                                                        resources = paste(input[[paste0("resource_selected", x)]]),
-                                                                                       table = NA))
+                                                                                       table = NA,
+                                                                                       profile = input[[paste0("profile_selected", x)]]))
         }
         else{
           showNotification("Duplicate resources not allowed", duration = 2, closeButton = FALSE, type = "error")
@@ -247,23 +260,33 @@ observeEvent(input$connect_selected, {
       creds$resources <- NULL
       creds$table <- NULL
       creds <- unique(creds)
+      # A unique study server ID cannot have more than one profile assigned
+      if(any(creds %>% dplyr::count(server, profile) %>% dplyr::count(server) %>% dplyr::select(n) > 1)){
+        stop('Make sure every unique Study has only one profile. [', 
+             paste(unlist(creds %>% dplyr::count(server, profile) %>% dplyr::count(server) %>% 
+                            dplyr::filter(n > 1) %>% dplyr::select(server)), collapse = ", "),
+             '] does not match this condition.')
+      }
       for(i in 1:nrow(creds)) {
         if(!is.na(creds[i, ]$token)){# Personal Access Token
           connection$builder$append(server = creds[i, ]$server, url = creds[i, ]$url,
                                     token = creds[i, ]$token,
-                                    driver = "OpalDriver")
+                                    driver = "OpalDriver", 
+                                    profile = creds[i, ]$profile)
         }
         else{# User uses regular user and password method
           connection$builder$append(server = creds[i, ]$server, url = creds[i, ]$url,
                                     user = creds[i, ]$user, password = creds[i, ]$pass,
-                                    driver = "OpalDriver")
+                                    driver = "OpalDriver", 
+                                    profile = creds[i, ]$profile)
         }
       }
       # Login into the servers
       connection$logindata <- connection$builder$build()
       connection$conns <- datashield.login(logins = connection$logindata)
       
-    }, error = function(w){shinyalert("Oops!", as.character(datashield.errors()), type = "error")})
+    }, error = function(w){shinyalert("Oops!", as.character(if(is.null(datashield.errors())){w}else{datashield.errors()}), 
+                                      type = "error")})
     
     tryCatch({
       # Load resources and tables
@@ -331,27 +354,27 @@ observeEvent(input$connect_selected, {
       
       ## table_columns_a. Accepts "table"
       if(any(unique(lists$available_tables$type_resource) %in% c("table"))) {
-        show(selector = "ul li:eq(1)")
+        show(selector = "ul li:eq(2)")
       }
       
       ## d_statistics. Accepts "table", "r_obj_eset", "r_obj_rse"
       if(any(unique(lists$available_tables$type_resource) %in% c("table"))) {
-        show(selector = "ul li:eq(2)")
+        show(selector = "ul li:eq(3)")
       }
       
       ## statistics_model. Accepts "table"
       if(any(unique(lists$available_tables$type_resource) %in% c("table"))) {
-        show(selector = "ul li:eq(3)")
+        show(selector = "ul li:eq(4)")
       }
       
       ## genomics. Accepts "ssh" and "r_obj_vcf"
       if(any(unique(lists$available_tables$type_resource) %in% c("ssh", "r_obj_vcf"))) {
-        show(selector = "ul li:eq(4)")
+        show(selector = "ul li:eq(5)")
       }
       
       ## omics. Accepts 
       if(any(unique(lists$available_tables$type_resource) %in% c("r_obj_rse", "r_obj_eset"))) {
-        show(selector = "ul li:eq(7)")
+        show(selector = "ul li:eq(8)")
       }
       
       connection$active <- TRUE

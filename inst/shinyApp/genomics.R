@@ -46,16 +46,23 @@ observeEvent(input$select_tables_vcf, {
     for(srv in unique(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][input$available_tables_vcf_render_rows_selected,]$server)){
       obj_in_srv <- lists$available_tables[type_resource %in% c("table", "r_obj_vcf") & server == srv]
       if(nrow(obj_in_srv) == 2 & all(obj_in_srv$type_resource %in% c("table", "r_obj_vcf"))){check <- TRUE}
-      else{check <- FALSE}
+      else{check <- FALSE; break}
     }
     # Check all covars tables have the same colnames
-    same_cols <- all(lapply(input$available_tables_vcf_render_rows_selected, function(i){
-      if(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][i,4] != "table"){return(TRUE)}
-      res<-all(match(lists$vcf_covars[[as.character(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][i,1])]], 
-                     lists$vcf_covars[[as.character(lists$available_tables[type_resource %in% c("table")][1,1])]]))
-      if(is.na(res)){FALSE} else{res}
-    }))
-    if(check & same_cols){
+    same_cols <- lapply(input$available_tables_vcf_render_rows_selected, function(i){
+      if(lists$available_tables[i,]$type_resource == "table"){
+        return(lists$vcf_covars[[as.character(lists$available_tables[i,]$name)]])
+      }
+    })
+    # Remove NULLs
+    same_cols[sapply(same_cols, is.null)] <- NULL
+    # Get if all cols are the same in the servers
+    same_cols_check <- all(sapply(same_cols[-1], FUN = identical, same_cols[1]))
+    
+    # If same cols is true repopulate the lists$vcf_covars_sel table with the variables
+    if(same_cols_check){lists$vcf_covars_sel <- same_cols[[1]]}
+    
+    if(check & same_cols_check){
       for(i in input$available_tables_vcf_render_rows_selected){
         if(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][i, 4] == "table"){
           datashield.assign.expr(connection$conns[as.numeric(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][i,2])],
@@ -84,17 +91,17 @@ observeEvent(input$select_tables_vcf, {
 })
 
 output$vcf_selector_var <- renderUI({
-  selectInput("vcf_var", "Variable", lists$vcf_covars[[1]])
+  selectInput("vcf_var", "Variable", lists$vcf_covars_sel)
 })
 output$vcf_selector_cov <- renderUI({
-  selectInput("vcf_cov", "Covariable", lists$vcf_covars[[1]][!(lists$vcf_covars[[1]] %in% input$vcf_var)], multiple = TRUE)
+  selectInput("vcf_cov", "Covariable", lists$vcf_covars_sel[!(lists$vcf_covars_sel %in% input$vcf_var)], multiple = TRUE)
 })
 
 observeEvent(input$gwas_trigger, {
   resources_match <- TRUE
   tryCatch({
       ds.GenotypeData(x="resource_vcf", covars = "resource_vcf_covar", 
-                    columnId = 1, newobj.name = 'gds.Data', datasources = connection$conns[
+                    columnId = "Sample", newobj.name = 'gds.Data', datasources = connection$conns[
                     unique(as.numeric(unlist(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][input$available_tables_vcf_render_rows_selected, 2])))
                     ])
   }, error = function(w){
@@ -105,7 +112,7 @@ observeEvent(input$gwas_trigger, {
     withProgress(message = "Performing GWAS", {
       model <- paste0(input$vcf_var, "~", if(is.null(input$vcf_cov)){1} else{paste0(input$vcf_cov, collapse = "+")})
       tryCatch({
-        vcf_results$result_table_gwas <- ds.GWAS(genoData = 'gds.Data', model = as.formula(model), datasources = connection$conns[
+        vcf_results$result_table_gwas <- ds.metaGWAS(genoData = 'gds.Data', model = as.formula(model), datasources = connection$conns[
           unique(as.numeric(unlist(lists$available_tables[type_resource %in% c("table", "r_obj_vcf")][input$available_tables_vcf_render_rows_selected, 2])))
         ])
         js$enableTab("gwas_plot")

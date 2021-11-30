@@ -27,8 +27,8 @@ observeEvent(input$select_tables_cols, {
       withProgress(message = "Getting the column types for selected tables", value = 0, {
         lists$table_columns_types <- NULL
         for(var in lists$table_columns[[input$available_tables_cols_render_rows_selected[1]]]){
-          type <- ds.class(paste0(lists$available_tables[input$available_tables_cols_render_rows_selected,1][1],
-                                  "$", var), connection$conns[as.numeric(lists$available_tables[input$available_tables_cols_render_rows_selected,2][1])])[[1]]
+          type <- ds.class(paste0(lists$available_tables[type_resource == "table"][input$available_tables_cols_render_rows_selected,1][1],
+                                  "$", var), connection$conns[as.numeric(lists$available_tables[type_resource == "table"][input$available_tables_cols_render_rows_selected,2][1])])[[1]]
           lists$table_columns_types <- cbind(lists$table_columns_types, rbind(var, paste(type, collapse = ", ")))
           incProgress(1/length(lists$table_columns[[1]]))
         }
@@ -57,6 +57,7 @@ observeEvent(input$jsValue, {
         # ds.dataFrame(x = as.character(table_name[index]), stringsAsFactors = FALSE, newobj = as.character(table_name[index]),
         #              datasources = connection$conns[as.numeric(tables_available[index,2])])
         complete_name <- paste(table_name[index], variable, sep = "$")
+        table_used <- paste(table_name[index])
         incProgress(0.2 / length(input$available_tables_cols_render_rows_selected))
         # Get new variable (with class updated)
         if(new_class == "factor"){
@@ -67,55 +68,94 @@ observeEvent(input$jsValue, {
           ds.asNumeric(complete_name, variable, datasources = connection$conns[as.numeric(tables_available[index,2])])
         }
         incProgress(0.2 / length(input$available_tables_cols_render_rows_selected))
-        # Create auxiliary tables without the column 'variable', one table is the columns on the left, the other the
-        # columns on the right
-        extreme_left <- FALSE
-        extreme_right <- FALSE
-        # Left creation
-        if(row != 1){
-          DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])], 
-                                      "aux_col_no_variable_left", 
-                                      as.symbol(paste0(table_name[index], "[,", 1,":", row-1,"]")))
-        } else{
-          extreme_left <- TRUE
-        }
-        # Right creation
-        if(row != nrow(lists$table_columns_types)){
-          DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])], 
-                                      "aux_col_no_variable_right", 
-                                      as.symbol(paste0(table_name[index], "[,", row+1,":", 
-                                                       nrow(lists$table_columns_types),"]")))
-        } else{
-          extreme_right <- TRUE
-        }
-        incProgress(0.3 / length(input$available_tables_cols_render_rows_selected))
-        # Remove original table
-        ds.rm(as.character(table_name[index]), connection$conns[as.numeric(tables_available[index,2])])
-        incProgress(0.3 / length(input$available_tables_cols_render_rows_selected))
-        # Merge auxiliary table with column with new class and assign same name as the original table
-        if(extreme_left){
-          cally <- paste0("cbind(", variable, ", aux_col_no_variable_right)")
-          DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
-                                      as.character(table_name[index]), 
-                                      as.symbol(cally))
-          ds.rm("aux_col_no_variable_right", datasources = connection$conns[as.numeric(tables_available[index,2])])
-        } else if(extreme_right){
-          cally <- paste0("cbind(aux_col_no_variable_left,", variable, ")")
-          DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
-                                      as.character(table_name[index]), 
-                                      as.symbol(cally))
-          
-          ds.rm("aux_col_no_variable_left", datasources = connection$conns[as.numeric(tables_available[index,2])])
-        } else{
-          cally <- paste0("cbind(aux_col_no_variable_left,", variable, ", aux_col_no_variable_right)")
-          DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
-                                      as.character(table_name[index]), 
-                                      as.symbol(cally))
-          
-          ds.rm("aux_col_no_variable_left", datasources = connection$conns[as.numeric(tables_available[index,2])])
-          ds.rm("aux_col_no_variable_right", datasources = connection$conns[as.numeric(tables_available[index,2])])
-          ds.rm(variable, datasources = connection$conns[as.numeric(tables_available[index,2])])
-        }
+        
+        # Create sequence of the length of the table to be used on the dataFrameSubset to keep all the rows
+        ds.seq(FROM.value.char = "1",
+               BY.value.char = "1",
+               TO.value.char = as.character(ds.dim(table_used, 
+                                                   datasources = connection$conns[as.numeric(tables_available[index,2])])[[1]][1]),
+               newobj = "ONES",
+               datasources =  connection$conns[as.numeric(tables_available[index,2])])
+        
+        # Create a new dataframe without the selected column (which has been modified)
+        ds.dataFrameSubset(df.name = table_used,
+                           V1.name = "ONES",
+                           V2.name = "ONES",
+                           Boolean.operator = "==",
+                           keep.cols = NULL,
+                           rm.cols = row,
+                           keep.NAs = TRUE,
+                           newobj = "aux_table_no_objective_column",
+                           datasources = connection$conns[as.numeric(tables_available[index,2])],
+                           notify.of.progress = FALSE)
+        
+        # Bind the new dataframe with the vector with the class change applied
+        cally <- paste0("cbind(", variable, ", aux_table_no_objective_column)")
+        DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
+                                    "aux_table_with_objective_column", 
+                                    as.symbol(cally))
+        
+        # Reorder the dataframe to match the original dataframe
+        ds.dataFrameSubset(df.name = "aux_table_with_objective_column",
+                           V1.name = "ONES",
+                           V2.name = "ONES",
+                           Boolean.operator = "==",
+                           keep.cols = c(1:(row-1)+1, 1, row:(nrow(lists$table_columns_types)-1)+1),
+                           rm.cols = NULL,
+                           keep.NAs = TRUE,
+                           newobj = table_used,
+                           datasources = connection$conns[as.numeric(tables_available[index,2])],
+                           notify.of.progress = FALSE)
+        
+        # # Create auxiliary tables without the column 'variable', one table is the columns on the left, the other the
+        # # columns on the right
+        # extreme_left <- FALSE
+        # extreme_right <- FALSE
+        # # Left creation
+        # if(row != 1){
+        #   DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])], 
+        #                               "aux_col_no_variable_left", 
+        #                               as.symbol(paste0(table_name[index], "[,", 1,":", row-1,"]")))
+        # } else {
+        #   extreme_left <- TRUE
+        # }
+        # # Right creation
+        # if(row != nrow(lists$table_columns_types)){
+        #   DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])], 
+        #                               "aux_col_no_variable_right", 
+        #                               as.symbol(paste0(table_name[index], "[,", row+1,":", 
+        #                                                nrow(lists$table_columns_types),"]")))
+        # } else{
+        #   extreme_right <- TRUE
+        # }
+        # incProgress(0.3 / length(input$available_tables_cols_render_rows_selected))
+        # # Remove original table
+        # ds.rm(as.character(table_name[index]), connection$conns[as.numeric(tables_available[index,2])])
+        # incProgress(0.3 / length(input$available_tables_cols_render_rows_selected))
+        # # Merge auxiliary table with column with new class and assign same name as the original table
+        # if(extreme_left){
+        #   cally <- paste0("cbind(", variable, ", aux_col_no_variable_right)")
+        #   DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
+        #                               as.character(table_name[index]), 
+        #                               as.symbol(cally))
+        #   ds.rm("aux_col_no_variable_right", datasources = connection$conns[as.numeric(tables_available[index,2])])
+        # } else if(extreme_right){
+        #   cally <- paste0("cbind(aux_col_no_variable_left,", variable, ")")
+        #   DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
+        #                               as.character(table_name[index]), 
+        #                               as.symbol(cally))
+        #   
+        #   ds.rm("aux_col_no_variable_left", datasources = connection$conns[as.numeric(tables_available[index,2])])
+        # } else{
+        #   cally <- paste0("cbind(aux_col_no_variable_left,", variable, ", aux_col_no_variable_right)")
+        #   DSI::datashield.assign.expr(connection$conns[as.numeric(tables_available[index,2])],
+        #                               as.character(table_name[index]), 
+        #                               as.symbol(cally))
+        #   
+        #   ds.rm("aux_col_no_variable_left", datasources = connection$conns[as.numeric(tables_available[index,2])])
+        #   ds.rm("aux_col_no_variable_right", datasources = connection$conns[as.numeric(tables_available[index,2])])
+        #   ds.rm(variable, datasources = connection$conns[as.numeric(tables_available[index,2])])
+        # }
       }
     })
     

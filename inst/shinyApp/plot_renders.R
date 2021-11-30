@@ -74,26 +74,28 @@ output$d_statistics_boxplot_plot <- renderPlot({
 
 output$glm_slma_plot <- renderPlot({
   plots$glm_slma <- function(){
-    method_lookup <- c("ML", "REML", "FE")
-    names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood", "Fixed-Effects meta-analysis")
+    method_lookup <- c("ML", "REML") #, "FE")
+    names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood") #, "Fixed-Effects meta-analysis")
     method <- method_lookup[input$glm_slma_method]
-    tryCatch({ds.forestplot(glm_results$glm_result_table, method)}, error = function(w){})
+    tryCatch({ds.forestplot(glm_results$glm_result_table, method = method)}, error = function(w){})
   }
   plots$glm_slma()
 })
 
 output$glmer_slma_plot <- renderPlot({
   plots$glmer_slma <- function(){
-    method_lookup <- c("ML", "REML", "FE")
-    names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood", "Fixed-Effects meta-analysis")
+    method_lookup <- c("ML", "REML") #, "FE")
+    names(method_lookup) <- c("Maximum Likelihood", "REstricted Maximum Likelihood") #, "Fixed-Effects meta-analysis")
     method <- method_lookup[input$glmer_slma_method]
-    tryCatch({ds.forestplot(glm_results$glmer_result_table, method)}, error = function(w){})
+    tryCatch({ds.forestplot(glm_results$glmer_result_table, method = method)}, error = function(w){})
   }
   plots$glmer_slma()
 })
 
 output$survival_meta_analysis_plot <- renderPlot({
-  metafor::forest.rma(x = survival_models$meta_model)
+  metafor::forest.rma(x = survival_models$meta_model,
+                      digits = 3L,
+                      slab = unlist(unique(lists$available_tables[input$available_tables_sm_render_rows_selected,3])))
 })
 
 output$survival_plot <- renderPlot({

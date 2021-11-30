@@ -27,19 +27,23 @@ observeEvent(input$select_tables_sm, {
     }
     else{
       datashield.rm(connection$conns, "tables_sm")
-      for(i in input$available_tables_sm_render_rows_selected){
-        lists$available_tables[type_resource == "table"][i,2]
-        
-        datashield.assign.expr(connection$conns[as.numeric(lists$available_tables[type_resource == "table"][i,2])],
-                               "tables_sm", as.symbol(
-                                 as.character(lists$available_tables[type_resource == "table"][i,1])
-                               ))
-      }
+      # for(i in input$available_tables_sm_render_rows_selected){
+      #   lists$available_tables[type_resource == "table"][i,2]
+      #   
+      #   datashield.assign.expr(connection$conns[as.numeric(lists$available_tables[type_resource == "table"][i,2])],
+      #                          "tables_sm", as.symbol(
+      #                            as.character(lists$available_tables[type_resource == "table"][i,1])
+      #                          ))
+      # }
+      tables_available <- lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected,]
+      expr <- as.list(tables_available$name)
+      names(expr) <- tables_available$server
+      DSI::datashield.assign.expr(connection$conns, "tables_sm", expr)
       withProgress(message = "Getting the column types for selected tables", value = 0, {
         lists$table_columns_types <- NULL
         for(var in lists$table_columns[[input$available_tables_sm_render_rows_selected[1]]]){
           type <- ds.class(paste0("tables_sm$", var), 
-                           connection$conns[as.numeric(lists$available_tables[input$available_tables_sm_render_rows_selected,2][1])])[[1]]
+                           connection$conns[as.numeric(lists$available_tables[type_resource == "table"][input$available_tables_sm_render_rows_selected,2][1])])[[1]]
           lists$table_columns_types <- cbind(lists$table_columns_types, rbind(var, paste(type, collapse = ", ")))
           incProgress(1/length(lists$table_columns[[1]]))
         }

@@ -107,10 +107,10 @@ observeEvent(input$server_resources_table_cell_edit, {
 })
 output$server_resources_table <- renderDT(
   connection$server_resources, 
-  editable = list(target = "cell", disable = list(columns = c(1,3,4,5))),
+  editable = list(target = "cell", disable = list(columns = c(1,3,4,5,6))),
   options=list(columnDefs = list(list(visible=FALSE, targets=c(0))),
                                             paging = FALSE, searching = FALSE, dom = "t"),
-  colnames = c('Server', 'Study', 'Project', 'Resource', 'Table')
+  colnames = c('Server', 'Study', 'Project', 'Resource', 'Table', 'Profile')
 )
 
 output$column_types_table <- renderDT({
