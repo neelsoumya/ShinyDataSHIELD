@@ -135,7 +135,7 @@ body <- dashboardBody(
                                            condition = "input.pat_switch1 == false",
                                            textInput("user1", "User", value = "dsuser"),
                                            tags$head(tags$script(HTML(jscode))),
-                                           passwordInput("password1", "Password", value = "password")
+                                           passwordInput("password1", "Password", value = "P@ssw0rd")
                                          ),
                                          materialSwitch(inputId = "pat_switch1", label = "Use Personal Access Token", status = "primary")
                                   )
