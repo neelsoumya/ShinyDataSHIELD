@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libssh2-1-dev \
     libjpeg-dev \
-    libxml2
+    libxml2-dev
 
 # Install R Dependencies - installs the r packages you need - if this step fails you’re likely 
 # missing system libraries that a package requires
