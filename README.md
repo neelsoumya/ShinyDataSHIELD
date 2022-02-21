@@ -2,7 +2,8 @@
 
 ## Introduction
 
-Shiny app for DataSHIELD omic data analyses
+Shiny app for DataSHIELD omic data analyses. DataSHIELD is a tool for privacy preserving analysis.
+
 
 ## Documentation
 
